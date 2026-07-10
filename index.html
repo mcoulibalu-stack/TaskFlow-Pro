@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TaskFlow Pro - Gestion de tâches</title>
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <!-- PARTICULES -->
+    <div id="particles-bg">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <!-- HEADER -->
+    <header>
+        <div class="container header-container">
+            <a href="#dashboard" class="logo">
+                <div class="logo-icon"><i class="fas fa-check-double"></i></div>
+                <h1>TaskFlow<span>Pro</span></h1>
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="#dashboard" class="active"><i class="fas fa-chart-pie"></i> Dashboard</a></li>
+                    <li><a href="#add-task"><i class="fas fa-plus-circle"></i> Ajouter</a></li>
+                    <li><a href="#task-list"><i class="fas fa-list-check"></i> Tâches</a></li>
+                    <li><a href="#calendar"><i class="fas fa-calendar-alt"></i> Calendrier</a></li>
+                    <li><a href="#reports"><i class="fas fa-chart-bar"></i> Rapports</a></li>
+                    <li><a href="#projects"><i class="fas fa-folder-open"></i> Projets</a></li>
+                    <li><a href="#team"><i class="fas fa-users"></i> Équipe</a></li>
+                    <li><a href="#settings"><i class="fas fa-sliders-h"></i> Paramètres</a></li>
+                    <li><a href="#about"><i class="fas fa-info-circle"></i> À propos</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+                <button id="mobile-menu-btn"><i class="fas fa-bars"></i></button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- ===== DASHBOARD ===== -->
+        <section id="dashboard" class="section scroll-animate">
+            <div class="container">
+                <div class="dashboard-header">
+                    <div class="dashboard-greeting">
+                        <span class="greeting-badge"><i class="fas fa-sun"></i> Bonjour !</span>
+                        <h2>Voici un aperçu de votre productivité</h2>
+                        <p class="greeting-date" id="currentDate"></p>
+                    </div>
+                    <div class="dashboard-actions">
+                        <button class="btn btn-primary btn-sm" onclick="document.getElementById('add-task').scrollIntoView({behavior:'smooth'})">
+                            <i class="fas fa-plus"></i> Nouvelle tâche
+                        </button>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card" id="stat-total">
+                        <div class="stat-icon"><i class="fas fa-tasks"></i></div>
+                        <div class="stat-content">
+                            <span class="stat-number">0</span>
+                            <p>Total tâches</p>
+                        </div>
+                        <div class="stat-progress"><div class="progress-bar" style="width:100%"></div></div>
+                    </div>
+                    <div class="stat-card" id="stat-in-progress">
+                        <div class="stat-icon"><i class="fas fa-spinner"></i></div>
+                        <div class="stat-content">
+                            <span class="stat-number">0</span>
+                            <p>En cours</p>
+                        </div>
+                        <div class="stat-progress"><div class="progress-bar" style="width:60%"></div></div>
+                    </div>
+                    <div class="stat-card" id="stat-done">
+                        <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                        <div class="stat-content">
+                            <span class="stat-number">0%</span>
+                            <p>Progression</p>
+                        </div>
+                        <div class="stat-progress"><div class="progress-bar" style="width:72%"></div></div>
+                    </div>
+                    <div class="stat-card" id="stat-late">
+                        <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                        <div class="stat-content">
+                            <span class="stat-number">0</span>
+                            <p>En retard</p>
+                        </div>
+                        <div class="stat-progress"><div class="progress-bar" style="width:30%"></div></div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-chart-line"></i> Activité hebdomadaire</h3>
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="weeklyChart" style="height:150px;"></canvas>
+                        </div>
+                    </div>
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-list-check"></i> Tâches du jour</h3>
+                            <span class="card-badge" id="todayCount">0 tâches</span>
+                        </div>
+                        <div class="today-tasks" id="todayTasks">
+                            <p class="empty-msg-small">Aucune tâche pour aujourd'hui</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== AJOUTER ===== -->
+        <section id="add-task" class="section scroll-animate">
+            <div class="container">
+                <div class="section-header">
+                    <div>
+                        <span class="section-badge"><i class="fas fa-plus-circle"></i> Création</span>
+                        <h2><i class="fas fa-plus-circle"></i> Nouvelle tâche</h2>
+                        <p>Organisez votre travail efficacement</p>
+                    </div>
+                </div>
+                <div class="form-wrapper">
+                    <form id="task-form">
+                        <div class="form-group">
+                            <label><i class="fas fa-heading"></i> Titre</label>
+                            <input type="text" id="task-title" placeholder="Ex: Finaliser le rapport" required />
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-align-left"></i> Description</label>
+                            <textarea id="task-desc" rows="3" placeholder="Détails..."></textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label><i class="fas fa-flag"></i> Priorité</label>
+                                <select id="task-priority">
+                                    <option value="basse">🟢 Basse</option>
+                                    <option value="moyenne" selected>🟡 Moyenne</option>
+                                    <option value="haute">🔴 Haute</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-tag"></i> Catégorie</label>
+                                <select id="task-category">
+                                    <option value="professionnel">💼 Professionnel</option>
+                                    <option value="personnel">👤 Personnel</option>
+                                    <option value="etude">📚 Étude</option>
+                                    <option value="urgent">⚡ Urgent</option>
+                                    <option value="autre">📌 Autre</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-calendar-alt"></i> Échéance</label>
+                                <input type="date" id="task-due" />
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Ajouter</button>
+                            <button type="reset" class="btn btn-secondary"><i class="fas fa-undo"></i> Réinitialiser</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== TÂCHES ===== -->
+        <section id="task-list" class="section scroll-animate">
+            <div class="container">
+                <div class="section-header">
+                    <div>
+                        <span class="section-badge"><i class="fas fa-list-check"></i> Gestion</span>
+                        <h2><i class="fas fa-list-check"></i> Mes tâches</h2>
+                        <p>Gérez votre flux de travail</p>
+                    </div>
+                    <div class="section-actions">
+                        <span id="task-counter" class="counter-badge"><i class="fas fa-tasks"></i> 0 tâches</span>
+                    </div>
+                </div>
+
+                <div class="filter-bar">
+                    <div class="search-wrapper">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="search-input" placeholder="Rechercher..." />
+                    </div>
+                    <select id="filter-status">
+                        <option value="all">📋 Tous</option>
+                        <option value="en cours">⏳ En cours</option>
+                        <option value="terminée">✅ Terminée</option>
+                    </select>
+                    <select id="filter-priority">
+                        <option value="all">🏷️ Toutes</option>
+                        <option value="basse">🟢 Basse</option>
+                        <option value="moyenne">🟡 Moyenne</option>
+                        <option value="haute">🔴 Haute</option>
+                    </select>
+                    <select id="filter-category">
+                        <option value="all">📂 Toutes</option>
+                        <option value="professionnel">💼 Pro</option>
+                        <option value="personnel">👤 Perso</option>
+                        <option value="etude">📚 Étude</option>
+                        <option value="urgent">⚡ Urgent</option>
+                    </select>
+                    <button id="clear-filters" class="btn btn-secondary"><i class="fas fa-undo"></i></button>
+                </div>
+
+                <div id="tasks-container"></div>
+            </div>
+        </section>
+
+        <!-- ===== CALENDRIER ===== -->
+        <section id="calendar" class="section scroll-animate">
+            <div class="container">
+                <div class="section-header">
+                    <div>
+                        <span class="section-badge"><i class="fas fa-calendar-alt"></i> Planification</span>
+                        <h2><i class="fas fa-calendar-alt"></i> Calendrier</h2>
+                        <p>Visualisez vos tâches par date</p>
+                    </div>
+                    <div class="section-actions">
+                        <button class="btn btn-secondary btn-sm" onclick="goToToday()"><i class="fas fa-calendar-day"></i> Aujourd'hui</button>
+                    </div>
+                </div>
+                <div class="calendar-wrapper">
+                    <div class="calendar-header">
+                        <button class="btn btn-secondary btn-sm" onclick="changeMonth(-1)"><i class="fas fa-chevron-left"></i></button>
+                        <h3 id="calendarMonth">Janvier 2025</h3>
+                        <button class="btn btn-secondary btn-sm" onclick="changeMonth(1)"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <div class="calendar-grid" id="calendarGrid"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== RAPPORTS ===== -->
+        <section id="reports" class="section scroll-animate">
+            <div class="container">
+                <div class="section-header">
+                    <div>
+                        <span class="section-badge"><i class="fas fa-chart-bar"></i> Analytique</span>
+                        <h2><i class="fas fa-chart-bar"></i> Rapports</h2>
+                        <p>Analysez vos performances</p>
+                    </div>
+                </div>
+                <div class="reports-grid">
+                    <div class="report-stats">
+                        <div class="report-stat-card">
+                            <span class="report-stat-number" id="reportTotal">0</span>
+                            <p><i class="fas fa-tasks"></i> Total</p>
+                        </div>
+                        <div class="report-stat-card">
+                            <span class="report-stat-number" id="reportCompleted">0</span>
+                            <p><i class="fas fa-check-circle"></i> Terminées</p>
+                        </div>
+                        <div class="report-stat-card">
+                            <span class="report-stat-number" id="reportRate">0%</span>
+                            <p><i class="fas fa-percentage"></i> Taux</p>
+                        </div>
+                    </div>
+                    <div class="report-summary">
+                        <div class="report-summary-card">
+                            <h4><i class="fas fa-trophy"></i> Performance</h4>
+                            <div class="performance-metrics">
+                                <div class="metric">
+                                    <span class="metric-label">Taux de complétion</span>
+                                    <span class="metric-value" id="metricGoal">0%</span>
+                                    <div class="metric-bar"><div class="metric-fill" style="width:0%"></div></div>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-label">En retard</span>
+                                    <span class="metric-value" id="metricLate">0%</span>
+                                    <div class="metric-bar"><div class="metric-fill" style="width:0%;background:linear-gradient(135deg,#f43f5e,#f093fb);"></div></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="report-summary-card">
+                            <h4><i class="fas fa-lightbulb"></i> Conseils</h4>
+                            <ul id="reportTips">
+                                <li>💡 Créez votre première tâche</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== PROJETS ===== -->
+        <section id="projects" class="section scroll-animate">
+            <div class="container">
+                <div class="section-header">
+                    <div>
+                        <span class="section-badge"><i class="fas fa-folder-open"></i> Gestion</span>
+                        <h2><i class="fas fa-folder-open"></i> Projets</h2>
+                        <p>Organisez vos tâches par catégorie</p>
+                    </div>
+                </div>
+                <div class="projects-grid" id="projectsContainer"></div>
+            </div>
+        </section>
+
+        <!-- ===== ÉQUIPE ===== -->
+        <section id="team" class="section scroll-animate">
+            <div class="container">
+                <div class="section-header">
+                    <div>
+                        <span class="section-badge"><i class="fas fa-users"></i> Collaboration</span>
+                        <h2><i class="fas fa-users"></i> Équipe</h2>
+                        <p>Gérez votre équipe</p>
+                    </div>
+                </div>
+                <div class="team-grid" id="teamContainer"></div>
+            </div>
+        </section>
+
+        <!-- ===== PARAMÈTRES ===== -->
+        <section id="settings" class="section scroll-animate">
+            <div class="container">
+                <div class="section-header">
+                    <div>
+                        <span class="section-badge"><i class="fas fa-sliders-h"></i> Configuration</span>
+                        <h2><i class="fas fa-sliders-h"></i> Paramètres</h2>
+                        <p>Personnalisez votre application</p>
+                    </div>
+                </div>
+                <div class="settings-wrapper">
+                    <div class="settings-group">
+                        <h3><i class="fas fa-palette"></i> Apparence</h3>
+                        <div class="settings-item">
+                            <span><i class="fas fa-moon"></i> Thème</span>
+                            <div class="settings-options">
+                                <button class="btn btn-secondary btn-sm active" onclick="setTheme('dark')">Sombre</button>
+                                <button class="btn btn-secondary btn-sm" onclick="setTheme('light')">Clair</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="settings-group">
+                        <h3><i class="fas fa-database"></i> Données</h3>
+                        <div class="settings-item">
+                            <span><i class="fas fa-download"></i> Exporter</span>
+                            <button class="btn btn-secondary btn-sm" onclick="exportData()"><i class="fas fa-download"></i></button>
+                        </div>
+                        <div class="settings-item">
+                            <span><i class="fas fa-upload"></i> Importer</span>
+                            <button class="btn btn-secondary btn-sm" onclick="document.getElementById('importFile').click()"><i class="fas fa-upload"></i></button>
+                            <input type="file" id="importFile" style="display:none" accept=".json" onchange="importData(event)" />
+                        </div>
+                        <div class="settings-item">
+                            <span><i class="fas fa-trash-alt" style="color:#f43f5e;"></i> Effacer</span>
+                            <button class="btn btn-danger btn-sm" onclick="clearAllData()"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== À PROPOS ===== -->
+        <section id="about" class="section scroll-animate">
+            <div class="container">
+                <div class="section-header">
+                    <div>
+                        <span class="section-badge"><i class="fas fa-info-circle"></i> À propos</span>
+                        <h2><i class="fas fa-info-circle"></i> TaskFlow Pro</h2>
+                        <p>Découvrez notre application</p>
+                    </div>
+                </div>
+                <div class="about-wrapper">
+                    <div class="about-grid">
+                        <div class="about-content">
+                            <div class="about-header">
+                                <div class="about-logo"><i class="fas fa-check-double"></i></div>
+                                <div>
+                                    <h3>TaskFlow <span>Pro</span></h3>
+                                    <p>v2.0 - Gestion de tâches intelligente</p>
+                                </div>
+                            </div>
+                            <p class="about-description">
+                                TaskFlow Pro est une application de gestion de tâches nouvelle génération, 
+                                conçue pour booster votre productivité.
+                            </p>
+                            <div class="about-features">
+                                <div class="feature-item">
+                                    <i class="fas fa-bolt"></i>
+                                    <div>
+                                        <h4>Rapide</h4>
+                                        <p>Interface optimisée</p>
+                                    </div>
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-shield-alt"></i>
+                                    <div>
+                                        <h4>Sécurisé</h4>
+                                        <p>Données en local</p>
+                                    </div>
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-mobile-alt"></i>
+                                    <div>
+                                        <h4>Responsive</h4>
+                                        <p>Sur tous les appareils</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="about-guide">
+                            <h4><i class="fas fa-book-open"></i> Guide</h4>
+                            <ul>
+                                <li><span class="guide-icon"><i class="fas fa-plus-circle"></i></span> Ajouter une tâche</li>
+                                <li><span class="guide-icon"><i class="fas fa-edit"></i></span> Modifier une tâche</li>
+                                <li><span class="guide-icon"><i class="fas fa-check"></i></span> Terminer une tâche</li>
+                                <li><span class="guide-icon"><i class="fas fa-filter"></i></span> Filtrer les tâches</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="about-tech">
+                        <span class="tech-tag">HTML5</span>
+                        <span class="tech-tag">CSS3</span>
+                        <span class="tech-tag">JavaScript</span>
+                        <span class="tech-tag">LocalStorage</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo"><i class="fas fa-check-double"></i> TaskFlow Pro</div>
+                <p>© 2025 - Groupe 5</p>
+                <div class="footer-social">
+                    <a href="#"><i class="fab fa-github"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- TOAST -->
+    <div id="toast" class="toast">
+        <div class="toast-icon"><i class="fas fa-check-circle"></i></div>
+        <div class="toast-content">
+            <strong id="toast-title">Succès</strong>
+            <p id="toast-message">Action effectuée</p>
+        </div>
+        <button class="toast-close"><i class="fas fa-times"></i></button>
+    </div>
+
+    <!-- BACK TO TOP -->
+    <button id="back-to-top" class="back-to-top"><i class="fas fa-chevron-up"></i></button>
+
+    <!-- CHART.JS pour les graphiques -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- VOTRE JS -->
+    <script src="script.js"></script>
+</body>
+</html>
