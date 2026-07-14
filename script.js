@@ -457,6 +457,65 @@ function showAddProject() {
     document.getElementById('add-task').scrollIntoView({ behavior: 'smooth' });
 }
 
+// ============================================================
+// PARAMÈTRES
+// ============================================================
+function setTheme(theme) {
+    const buttons = document.querySelectorAll('.settings-options .btn');
+    buttons.forEach(b => b.classList.remove('active'));
+    
+    if (theme === 'dark') {
+        document.body.classList.remove('light-mode');
+        buttons[0]?.classList.add('active');
+        localStorage.setItem('taskflow_theme', 'dark');
+        document.getElementById('themeToggle').innerHTML = '<i class="fas fa-moon"></i>';
+    } else {
+        document.body.classList.add('light-mode');
+        buttons[1]?.classList.add('active');
+        localStorage.setItem('taskflow_theme', 'light');
+        document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+    }
+}
+
+function exportData() {
+    const data = JSON.stringify({ tasks }, null, 2);
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `taskflow_backup_${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('Export', 'Données exportées !');
+}
+
+function importData(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = JSON.parse(e.target.result);
+            if (data.tasks) {
+                tasks = data.tasks;
+                saveToStorage();
+                renderTasks();
+                showToast('Import', 'Données importées !');
+            }
+        } catch { showToast('Erreur', 'Fichier invalide', 'error'); }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+}
+
+function clearAllData() {
+    if (confirm('Effacer toutes les données ?')) {
+        tasks = [];
+        saveToStorage();
+        renderTasks();
+        showToast('Effacé', 'Toutes les données effacées');
+    }
+}
 
 // ============================================================
 // TOAST
