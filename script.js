@@ -458,53 +458,6 @@ function showAddProject() {
 }
 
 // ============================================================
-// ÉQUIPE
-// ============================================================
-function updateTeam() {
-    const container = document.getElementById('teamContainer');
-    if (!container) return;
-    
-    const stats = {};
-    tasks.forEach(task => {
-        let member = '';
-        switch(task.category) {
-            case 'professionnel': member = 'Thomas'; break;
-            case 'personnel': member = 'Lisa'; break;
-            case 'etude': member = 'Marie'; break;
-            case 'urgent': member = 'Jean'; break;
-            default: member = 'Thomas'; break;
-        }
-        if (!stats[member]) stats[member] = { total: 0, done: 0 };
-        stats[member].total++;
-        if (task.status === 'terminée') stats[member].done++;
-    });
-    
-    const members = [
-        { name: 'Thomas', role: 'Lead Developer', color: '#667eea' },
-        { name: 'Lisa', role: 'Designer', color: '#f6d365' },
-        { name: 'Marie', role: 'Project Manager', color: '#34d399' },
-        { name: 'Jean', role: 'Developer', color: '#f43f5e' }
-    ];
-    
-    container.innerHTML = members.map(m => {
-        const s = stats[m.name] || { total: 0, done: 0 };
-        const progress = s.total > 0 ? Math.round((s.done / s.total) * 100) : 0;
-        return `
-            <div class="member-card">
-                <div class="member-avatar" style="background:${m.color};">${m.name[0]}</div>
-                <div class="member-name">${m.name}</div>
-                <div class="member-role">${m.role}</div>
-                <div class="member-tasks">${s.total} tâches (${progress}% terminées)</div>
-            </div>
-        `;
-    }).join('');
-}
-
-function showAddMember() {
-    showToast('Équipe', 'Ajout de membre bientôt disponible');
-}
-
-// ============================================================
 // PARAMÈTRES
 // ============================================================
 function setTheme(theme) {
